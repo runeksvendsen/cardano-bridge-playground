@@ -1,0 +1,17 @@
+FROM bridge_nix-base
+
+# https://iohk.zendesk.com/hc/en-us/articles/900000672303-How-to-build-and-run-cardano-wallet-using-Nix
+RUN git clone https://github.com/input-output-hk/cardano-wallet
+WORKDIR /cardano-wallet
+RUN nix-build -A cardano-wallet
+
+RUN mkdir data/
+
+RUN wget 'https://hydra.iohk.io/build/7191656/download/1/testnet-byron-genesis.json'
+
+# Command for running cardano-wallet:
+#
+#   result/bin/cardano-wallet serve \
+#       --node-socket ~/cardano-node/state-node-testnet/node.socket \
+#       --testnet testnet-byron-genesis.json \
+#       --database db/testnet

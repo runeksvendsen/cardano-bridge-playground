@@ -1,0 +1,31 @@
+version: "3.4"
+
+services:
+   cardano-node:
+      build:
+        context: .
+        dockerfile: Dockerfile.cardano-node
+      entrypoint: /cardano-node/testnet-node-local/bin/cardano-node-testnet
+      volumes:
+        - node-data:/state-node-testnet/
+
+   cardano-wallet:
+      build:
+        context: .
+        dockerfile: Dockerfile.cardano-wallet
+      entrypoint: >
+        /cardano-wallet/result/bin/cardano-wallet serve
+          --node-socket /cardano-wallet/ipc/node.socket
+          --testnet /cardano-wallet/testnet-byron-genesis.json
+          --database /cardano-wallet/db/testnet
+      volumes:
+        - wallet-data:/cardano-wallet/data
+        - node-data:/cardano-wallet/ipc
+      links:
+        - cardano-node
+      depends_on:
+        - cardano-node
+
+volumes:
+  node-data: # TODO: split into "node data" + "socket"
+  wallet-data:
